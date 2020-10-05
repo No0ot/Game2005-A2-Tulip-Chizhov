@@ -8,6 +8,7 @@
 #include "Button.h"
 #include "Enemy.h"
 #include "Tile.h"
+#include "IMGUI/imgui.h"
 
 #include <cassert>
 
@@ -48,6 +49,9 @@ private:
 	Button* m_pNextButton;
 
 	void m_buildGrid();
+
+	// IMGUI Function
+	void GUI_Function() const;
 };
 
 #endif /* defined (__PLAY_SCENE__) */

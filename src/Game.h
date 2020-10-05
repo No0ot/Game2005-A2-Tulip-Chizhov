@@ -10,6 +10,8 @@
 
 #include <SDL.h>
 
+#include "IMGUI/imgui.h"
+
 // Game Managers
 #include "CollisionManager.h"
 
