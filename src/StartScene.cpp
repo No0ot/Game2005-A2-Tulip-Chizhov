@@ -46,18 +46,13 @@ void StartScene::handleEvents(float deltaTime)
 void StartScene::start()
 {
 	const SDL_Color blue = { 0, 0, 255, 255 };
-	const SDL_Color red = { 255, 0, 0, 255 };
-	m_pStartLabel = new Label("GAME2005 Assignment 1", "Consolas", 60, blue, glm::vec2(400.0f, 40.0f));
+	m_pStartLabel = new Label("GAME2005 Lab 1", "Consolas", 80, blue, glm::vec2(400.0f, 40.0f));
 	m_pStartLabel->setParent(this);
 	addChild(m_pStartLabel);
 
 	m_pInstructionsLabel = new Label("Press Start button or \"1\" to Play", "Consolas", 40, blue, glm::vec2(400.0f, 120.0f));
 	m_pInstructionsLabel->setParent(this);
 	addChild(m_pInstructionsLabel);
-
-	m_pChrisLabel = new Label("Christopher Tulip - 100818050" , "Consolas", 20, red, glm::vec2(600.0f, 180.0f));
-	m_pChrisLabel->setParent(this);
-	addChild(m_pChrisLabel);
 
 
 	m_pShip = new Ship();

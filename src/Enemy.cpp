@@ -3,9 +3,9 @@
 #include "Util.h"
 
 Enemy::Enemy() {
-	TextureManager::Instance()->load("../Assets/textures/Stormtrooper.png", "stormtrooper");
+	TextureManager::Instance()->load("../Assets/textures/Stormtrooper.png", "trooper");
 
-	auto size = TextureManager::Instance()->getTextureSize("stormtrooper");
+	const auto size = TextureManager::Instance()->getTextureSize("trooper");
 	setWidth(size.x);
 	setHeight(size.y);
 
@@ -24,18 +24,10 @@ void Enemy::draw() {
 	const auto x = getTransform()->position.x;
 	const auto y = getTransform()->position.y;
 
-	TextureManager::Instance()->draw("stormtrooper", x, y, 0, 255, true);
+	TextureManager::Instance()->draw("trooper", x, y, getWidth(), getHeight(), 0, 255, true);
 }
 
 void Enemy::update(float deltaTime) {
-	switch (getBehaviorState()) {
-	case WANDERING:
-		break;
-	case SEEKING:
-		break;
-	default:
-		break;
-	}
 }
 
 void Enemy::clean() {

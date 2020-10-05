@@ -8,10 +8,11 @@
 
 class Config {
 public:
-	static const int SCREEN_WIDTH = 800;
-	static const int SCREEN_HEIGHT = 600;
-	static const int ROW_NUM = 12;
-	static const int COL_NUM = 16;
+	static const int SCREEN_WIDTH = 1600;
+	static const int SCREEN_HEIGHT = 900;
+	static const float PX_PER_METER;
+	static const int ROW_NUM = 15;
+	static const int COL_NUM = 20;
 	static const int TILE_SIZE = 40;
 	static const int TILE_COST = 1;
 	static const int MINE_NUM = 50;
@@ -32,5 +33,7 @@ public:
 	}
 
 };
+
+const float PX_PER_METER = 3.175;
 
 #endif /* defined (__CONFIG__) */

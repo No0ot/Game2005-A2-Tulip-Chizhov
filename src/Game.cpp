@@ -5,7 +5,6 @@
 #include "glm/gtx/string_cast.hpp"
 #include "Renderer.h"
 #include "EventManager.h"
-#include "IMGUI_SDL/imgui_sdl.h"
 
 
 Game* Game::s_pInstance = nullptr;
@@ -63,9 +62,6 @@ bool Game::init(const char* title, const int x, const int y, const int width, co
 				std::cout << "renderer init failure" << std::endl;
 				return false; // render int fail
 			}
-
-			ImGui::CreateContext();
-			ImGuiSDL::Initialize(Renderer::Instance()->getRenderer(), width, height);
 
 			// Initialize Font Support
 			if (TTF_Init() == -1)
@@ -188,8 +184,6 @@ void Game::update(float deltaTime) const
 void Game::clean() const
 {
 	std::cout << "cleaning game" << std::endl;
-
-	ImGui::DestroyContext();
 
 	TTF_Quit();
 

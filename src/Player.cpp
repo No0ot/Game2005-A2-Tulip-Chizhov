@@ -5,9 +5,9 @@
 
 Player::Player()
 {
-	TextureManager::Instance()->load("../Assets/textures/ThermalDetonator.png", "detonator");
+	TextureManager::Instance()->load("../Assets/textures/Wookie.png", "wookie");
 	
-	auto size = TextureManager::Instance()->getTextureSize("detonator");
+	auto size = TextureManager::Instance()->getTextureSize("wookie");
 	setWidth(size.x);
 	setHeight(size.y);
 
@@ -16,6 +16,7 @@ Player::Player()
 	getRigidBody()->acceleration = glm::vec2(0.0f, 0.0f);
 	getRigidBody()->isColliding = false;
 	setType(PLAYER);
+	SetSprint(false);
 }
 
 Player::~Player()
@@ -27,7 +28,7 @@ void Player::draw()
 	const auto x = getTransform()->position.x;
 	const auto y = getTransform()->position.y;
 
-	TextureManager::Instance()->draw("detonator", x, y, 0, 255, true);
+	TextureManager::Instance()->draw("wookie", x, y, getWidth(), getHeight(), 0, 255, true);
 }
 
 void Player::update(float deltaTime)
@@ -47,6 +48,13 @@ void Player::update(float deltaTime)
 void Player::clean()
 {
 
+}
+
+void Player::spawn(glm::vec2 position)
+{
+	getTransform()->position = position;
+	getRigidBody()->velocity = { 0.0f, 0.0f };
+	getRigidBody()->acceleration = { 0.0f, 0.0f };
 }
 
 float Player::currentAcceleration()
