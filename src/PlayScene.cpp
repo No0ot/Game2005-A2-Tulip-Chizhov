@@ -2,6 +2,9 @@
 #include "Game.h"
 #include "EventManager.h"
 #include "Util.h"
+#include "IMGUI/imgui.h"
+#include "IMGUI_SDL/imgui_sdl.h"
+#include "Renderer.h"
 
 PlayScene::PlayScene()
 {
@@ -14,6 +17,12 @@ PlayScene::~PlayScene()
 void PlayScene::draw()
 {
 	drawDisplayList();
+	if (EventManager::Instance().isIMGUIActive())
+	{
+		GUI_Function();
+	}
+	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
+
 }
 
 void PlayScene::update(float deltaTime)
@@ -24,6 +33,8 @@ void PlayScene::update(float deltaTime)
 		m_pDistanceLabel->setText("Player colliding with Enemy");
 	else m_pDistanceLabel->setText("Distance = " + std::to_string(m_pPlayer->checkDistance(m_pEnemy)));
 	m_pVelocityLabel->setText("Velocity = " + std::to_string(Util::magnitude(m_pPlayer->getRigidBody()->velocity)));
+
+
 }
 
 void PlayScene::clean()
@@ -61,6 +72,7 @@ void PlayScene::handleEvents(float deltaTime)
 	{
 		TheGame::Instance()->quit();
 	}
+
 }
 
 void PlayScene::start()
@@ -107,3 +119,38 @@ void PlayScene::m_buildGrid()
 		}
 	}
 }
+
+void PlayScene::GUI_Function() const
+{
+	// Always open with a NewFrame
+	ImGui::NewFrame();
+
+	// See examples by uncommenting the following - also look at imgui_demo.cpp in the IMGUI filter
+	//ImGui::ShowDemoWindow();
+
+	ImGui::Begin("Settings", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
+
+	if (ImGui::Button("Project the Projectile"))
+	{
+		std::cout << "My Button Pressed" << std::endl;
+	}
+
+	ImGui::Separator();
+
+	static float float3[3] = { 0.0f, 1.0f, 1.5f };    // <----- make this the angle thrown
+	if (ImGui::SliderFloat3("set angle", float3, 0.0f, 90.0f))
+	{
+		std::cout << float3[0] << std::endl;
+		std::cout << float3[1] << std::endl;
+		std::cout << float3[2] << std::endl;
+		std::cout << "---------------------------\n";
+	}
+
+	ImGui::End();
+
+	// Don't Remove this
+	ImGui::Render();
+	ImGuiSDL::Render(ImGui::GetDrawData());
+	ImGui::StyleColorsDark();
+}
+

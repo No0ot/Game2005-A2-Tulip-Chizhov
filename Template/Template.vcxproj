@@ -159,9 +159,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\IMGUI\imgui.cpp" />
+    <ClCompile Include="..\include\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\include\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\include\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="..\include\IMGUI_SDL\imgui_sdl.cpp" />
     <ClCompile Include="..\src\Button.cpp" />
     <ClCompile Include="..\src\CollisionManager.cpp" />
     <ClCompile Include="..\src\Enemy.cpp" />
+    <ClCompile Include="..\src\EventManager.cpp" />
     <ClCompile Include="..\src\Sprite.cpp" />
     <ClCompile Include="..\src\Tile.cpp" />
     <ClCompile Include="..\src\UIControl.cpp" />
@@ -180,7 +186,6 @@
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\ship.cpp" />
     <ClCompile Include="..\src\SoundManager.cpp" />
-    <ClCompile Include="..\src\EventManager.cpp" />
     <ClCompile Include="..\src\SpriteSheet.cpp" />
     <ClCompile Include="..\src\StartScene.cpp" />
     <ClCompile Include="..\src\Target.cpp" />
@@ -188,12 +193,19 @@
     <ClCompile Include="..\src\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\IMGUI\imgui.h" />
+    <ClInclude Include="..\include\IMGUI\imgui_internal.h" />
+    <ClInclude Include="..\include\IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="..\include\IMGUI\imstb_textedit.h" />
+    <ClInclude Include="..\include\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="..\include\IMGUI_SDL\imgui_sdl.h" />
     <ClInclude Include="..\src\Animation.h" />
     <ClInclude Include="..\src\Button.h" />
     <ClInclude Include="..\src\CollisionManager.h" />
     <ClInclude Include="..\src\CollisionShape.h" />
     <ClInclude Include="..\src\Config.h" />
     <ClInclude Include="..\src\Enemy.h" />
+    <ClInclude Include="..\src\EventManager.h" />
     <ClInclude Include="..\src\SoundType.h" />
     <ClInclude Include="..\src\Sprite.h" />
     <ClInclude Include="..\src\Tile.h" />
@@ -201,7 +213,6 @@
     <ClInclude Include="..\src\DisplayObject.h" />
     <ClInclude Include="..\src\EndScene.h" />
     <ClInclude Include="..\src\Event.h" />
-    <ClInclude Include="..\src\EventManager.h" />
     <ClInclude Include="..\src\FontManager.h" />
     <ClInclude Include="..\src\Frame.h" />
     <ClInclude Include="..\src\Game.h" />

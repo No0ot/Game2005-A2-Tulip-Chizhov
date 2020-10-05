@@ -25,6 +25,12 @@
     <Filter Include="Core">
       <UniqueIdentifier>{21657abb-080f-4d0e-bc26-e9581cebc5a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI Objects\ImGUI">
+      <UniqueIdentifier>{c20f0f67-1cf8-45da-b5ad-cd9234adca76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI Objects\ImGUI_SDL">
+      <UniqueIdentifier>{c396f887-925d-44bc-8c1c-2c3168d96a15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\StartScene.cpp">
@@ -69,9 +75,6 @@
     <ClCompile Include="..\src\Game.cpp">
       <Filter>Singletons</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\EventManager.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Util.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -107,6 +110,24 @@
     </ClCompile>
     <ClCompile Include="..\src\Tile.cpp">
       <Filter>Game Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\IMGUI\imgui.cpp">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\IMGUI\imgui_demo.cpp">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\IMGUI\imgui_draw.cpp">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\IMGUI\imgui_widgets.cpp">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\IMGUI_SDL\imgui_sdl.cpp">
+      <Filter>UI Objects\ImGUI_SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\EventManager.cpp">
+      <Filter>Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +197,6 @@
     <ClInclude Include="..\src\Game.h">
       <Filter>Singletons</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\EventManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\MouseButtons.h">
       <Filter>Enums</Filter>
     </ClInclude>
@@ -226,6 +244,27 @@
     </ClInclude>
     <ClInclude Include="..\src\Tile.h">
       <Filter>Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IMGUI\imgui.h">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IMGUI\imgui_internal.h">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IMGUI\imstb_rectpack.h">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IMGUI\imstb_textedit.h">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IMGUI\imstb_truetype.h">
+      <Filter>UI Objects\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IMGUI_SDL\imgui_sdl.h">
+      <Filter>UI Objects\ImGUI_SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\EventManager.h">
+      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
