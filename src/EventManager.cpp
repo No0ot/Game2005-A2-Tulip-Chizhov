@@ -16,7 +16,6 @@ void EventManager::update()
         m_io = ImGui::GetIO();
         m_mouseWheel = 0;
 
-
 		for (auto controller : m_pGameControllers)
 		{
 			if(SDL_GameControllerGetAttached(controller->handle))
@@ -47,17 +46,15 @@ void EventManager::update()
 	            break;
 
 	        case SDL_MOUSEWHEEL:
-                m_mouseWheel = event.wheel.y;
 	            break;
 
             case SDL_TEXTINPUT:
                 m_io.AddInputCharactersUTF8(event.text.text);
                 break;
 
-            case SDL_KEYDOWN:
+	        case SDL_KEYDOWN:
 	            onKeyDown();
-
-                if(event.key.keysym.sym == SDLK_BACKQUOTE)
+                if (event.key.keysym.sym == SDLK_BACKQUOTE)
                 {
                     m_isIMGUIActive = (m_isIMGUIActive) ? false : true;
                 }
@@ -100,7 +97,6 @@ void EventManager::update()
 	            break;
 	        }
 	    }
-
         m_io.DeltaTime = 1.0f / 60.0f;
         int mouseX, mouseY;
         const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
@@ -140,8 +136,6 @@ bool EventManager::isKeyDown(const SDL_Scancode key) const
             return false;
         }
     }
-
-    
 
     return false;
 }
@@ -289,7 +283,7 @@ bool EventManager::isIMGUIActive()
 }
 
 EventManager::EventManager():
-    m_isIMGUIActive(false), m_keyStates(nullptr), m_mouseWheel(0), m_isActive(true), m_io(ImGui::GetIO())
+    m_keyStates(nullptr), m_mouseWheel(0), m_isActive(true), m_isIMGUIActive(true), m_io(ImGui::GetIO())
 {
 	// initialize mouse position
     m_mousePosition = glm::vec2(0.0f, 0.0f);
@@ -302,7 +296,7 @@ EventManager::EventManager():
 
     m_initializeControllers();
 
-	// initialize IMGUI Key Map
+    // initialize IMGUI Key Map
     m_IMGUI_Keymap();
 }
 

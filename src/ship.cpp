@@ -6,9 +6,9 @@
 
 Ship::Ship() : m_maxSpeed(10.0f)
 {
-	TextureManager::Instance()->load("../Assets/textures/Wookie.png","wookie");
+	TextureManager::Instance()->load("../Assets/textures/ship3.png","ship");
 
-	auto size = TextureManager::Instance()->getTextureSize("wookie");
+	auto size = TextureManager::Instance()->getTextureSize("ship");
 	setWidth(size.x);
 	setHeight(size.y);
 
@@ -34,7 +34,7 @@ void Ship::draw()
 	const auto y = getTransform()->position.y;
 
 	// draw the ship
-	TextureManager::Instance()->draw("wookie", x, y, m_currentHeading, 255, true, SDL_FLIP_HORIZONTAL);
+	TextureManager::Instance()->draw("ship", x, y, getWidth(), getHeight(), m_currentHeading, 255, true);
 }
 
 

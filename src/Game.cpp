@@ -5,8 +5,10 @@
 #include "glm/gtx/string_cast.hpp"
 #include "Renderer.h"
 #include "EventManager.h"
-#include "IMGUI_SDL/imgui_sdl.h"
 
+// IMGUI Includes
+#include "IMGUI/imgui.h"
+#include "IMGUI_SDL/imgui_sdl.h"
 
 Game* Game::s_pInstance = nullptr;
 
@@ -188,8 +190,6 @@ void Game::update(float deltaTime) const
 void Game::clean() const
 {
 	std::cout << "cleaning game" << std::endl;
-
-	ImGui::DestroyContext();
 
 	TTF_Quit();
 

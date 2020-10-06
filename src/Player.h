@@ -23,6 +23,8 @@ public:
 	virtual void draw() override;
 	virtual void update(float deltaTime) override;
 	virtual void clean() override;
+
+	void spawn(glm::vec2 position);
 	
 	//Movement
 	float currentAcceleration();

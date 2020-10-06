@@ -7,9 +7,8 @@
 #include "Player.h"
 #include "Button.h"
 #include "Enemy.h"
+#include "Grenade.h"
 #include "Tile.h"
-#include "IMGUI/imgui.h"
-
 #include <cassert>
 
 class PlayScene : public Scene
@@ -25,6 +24,12 @@ public:
 	virtual void handleEvents(float deltaTime) override;
 	virtual void start() override;
 
+	void calculateAngle();
+
+	void resetSim();
+	void reset();
+	void launch();
+
 	//scene getters
 	Player* getPlayer() {
 		assert(m_pPlayer != nullptr);
@@ -35,23 +40,38 @@ public:
 		assert(m_pEnemy != nullptr);
 		return m_pEnemy;
 	}
+
+	Grenade* getGrenade() {
+		assert(m_pGrenade != nullptr);
+		return m_pGrenade;
+	}
 private:
-	glm::vec2 m_mousePosition;
-	std::vector<Tile*> m_pGrid;
-
-	Plane* m_pPlaneSprite;
-	Player* m_pPlayer;
-	Enemy* m_pEnemy;
-	Label* m_pDistanceLabel;
-	Label* m_pVelocityLabel;
-
-	Button* m_pBackButton;
-	Button* m_pNextButton;
+	// IMGUI Function
+	void GUI_Function() ;
 
 	void m_buildGrid();
 
-	// IMGUI Function
-	void GUI_Function() const;
+	bool m_inputValid;
+	glm::vec2 m_mousePosition;
+	glm::vec2 m_launchVector;
+	float m_launchAngle = 15.9f;
+	float m_launchSpeed, m_launchSpeedDefault = 95, m_launchSpeedLowest = 5, m_launchSpeedHighest = 155;
+	float m_groundLevel = 800.0f;
+
+	float m_distanceToTarget = 485.0f;
+
+	std::vector<Tile*> m_pGrid;
+	Player* m_pPlayer;
+	Enemy* m_pEnemy;
+	Grenade* m_pGrenade;
+
+	Label* m_pDistanceLabel;
+	Label* m_pVelocityLabel;
+	Label* m_pAngleLabel;
+	Label* m_pScaleLabel;
+
+	Button* m_pBackButton;
+	Button* m_pNextButton;
 };
 
 #endif /* defined (__PLAY_SCENE__) */

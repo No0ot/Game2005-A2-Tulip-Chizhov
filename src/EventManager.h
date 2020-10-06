@@ -9,7 +9,6 @@
 #include "GameController.h"
 #include "IMGUI/imgui.h"
 
-
 /* singleton with magic static */
 class EventManager
 {
@@ -65,15 +64,13 @@ private:
 
 	// IMGUI IO
 	void m_IMGUI_Keymap();
-	
 
 	/*------- PRIVATE MEMBER VARIABLES -------*/
-
-	// IMGUI variables
-	ImGuiIO& m_io;
-	bool m_isIMGUIActive;
-
 	
+		// IMGUI variables
+	ImGuiIO& m_io;
+	bool m_isIMGUIActive = true;
+
 	// keyboard states array
 	const Uint8* m_keyStates;
 
