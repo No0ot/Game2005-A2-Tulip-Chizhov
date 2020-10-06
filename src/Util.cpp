@@ -292,6 +292,15 @@ glm::vec2 Util::rotateVector(glm::vec2 origin, float angle)
 	return Util::normalize(final);
 }
 
+glm::vec2 Util::getVector(float angle)
+{
+	glm::vec2 final;
+	float angleinRads = angle * Util::Deg2Rad;
+	final.x = cos(angleinRads);
+	final.y = sin(angleinRads);
+	return final;
+}
+
 glm::vec2 Util::lerpVector(glm::vec2 from, glm::vec2 to, float t)
 {
 	glm::vec2 final;
@@ -331,7 +340,7 @@ void Util::DrawRect(glm::vec2 position, int width, int height, glm::vec4 colour)
 	const auto renderer = /* TheGame::Instance()->getRenderer()*/ Renderer::Instance()->getRenderer();
 
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
-	SDL_RenderDrawRect(renderer, &rectangle);
+	SDL_RenderFillRect(renderer, &rectangle);
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 }
 

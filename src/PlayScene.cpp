@@ -3,6 +3,11 @@
 #include "EventManager.h"
 #include "Util.h"
 
+// required for IMGUI
+#include "IMGUI/imgui.h"
+#include "IMGUI_SDL/imgui_sdl.h"
+#include "Renderer.h"
+
 PlayScene::PlayScene()
 {
 	PlayScene::start();
@@ -13,16 +18,29 @@ PlayScene::~PlayScene()
 
 void PlayScene::draw()
 {
+	for (auto tile : m_pGrid)
+		tile->draw();
+
+	if (EventManager::Instance().isIMGUIActive())
+	{
+		GUI_Function();
+	}
+
 	drawDisplayList();
+	
+	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
 }
 
 void PlayScene::update(float deltaTime)
 {
 	updateDisplayList(deltaTime);
-	
+
+	m_launchVector = Util::getVector( -m_launchAngle);
+
 	switch (m_pGrenade->getGrenadeState()) {
 	case SETUP:
-		calculateAngle();
+		//calculateAngle();
+		m_pGrenade->getTransform()->position = m_pPlayer->getTransform()->position;
 		m_pDistanceLabel->setText("Wookie Distance to Trooper = " + std::to_string(m_pPlayer->checkDistance(m_pEnemy) / PX_PER_METER));
 		m_pVelocityLabel->setText("Launch Velocity = " + std::to_string(m_launchSpeed) + "m/s");
 		m_pAngleLabel->setText("Angle of attack = " + std::to_string(m_launchAngle));
@@ -50,7 +68,7 @@ void PlayScene::handleEvents(float deltaTime)
 
 	if (EventManager::Instance().getMouseButton(0)) {
 		switch (m_pGrenade->getGrenadeState()) {
-		case SETUP:
+		/*case SETUP:
 			if (m_inputValid) {
 				launch();
 				m_inputValid = false;
@@ -63,7 +81,7 @@ void PlayScene::handleEvents(float deltaTime)
 			}
 			break;
 		default:
-			break;
+			break;*/
 		}
 	}
 	else m_inputValid = true;
@@ -77,28 +95,30 @@ void PlayScene::handleEvents(float deltaTime)
 void PlayScene::start()
 {
 	m_launchSpeed = m_launchSpeedDefault;
+	
+	m_buildGrid();
 
 	// Player Sprite
 	m_pPlayer = new Player();
 	m_pPlayer->setParent(this);
 	addChild(m_pPlayer);
-	m_pPlayer->spawn(glm::vec2(30, m_groundLevel));
-	m_pPlayer->setHeight(10.0f);
-	m_pPlayer->setWidth(10.0f);
+	m_pPlayer->spawn(glm::vec2(50, m_groundLevel));
+	//m_pPlayer->setHeight(10.0f);
+	//m_pPlayer->setWidth(10.0f);
 	
 	// Enemy Sprite
 	m_pEnemy = new Enemy();
 	m_pEnemy->setParent(this);
 	addChild(m_pEnemy);
 	m_pEnemy->spawn(glm::vec2(m_pPlayer->getTransform()->position.x + 485*PX_PER_METER, m_groundLevel));
-	m_pEnemy->setHeight(10.0f);
-	m_pEnemy->setWidth(15.0f);
+	//m_pEnemy->setHeight(10.0f);
+	//m_pEnemy->setWidth(15.0f);
 
 	m_pGrenade = new Grenade();
 	m_pGrenade->setParent(this);
 	addChild(m_pGrenade);
-	m_pGrenade->setHeight(5.0f);
-	m_pGrenade->setWidth(5.0f);
+	//m_pGrenade->setHeight(5.0f);
+	//m_pGrenade->setWidth(5.0f);
 	m_pGrenade->setGroundHeight(m_groundLevel);
 	reset();
 
@@ -106,25 +126,39 @@ void PlayScene::start()
 	
 	const SDL_Color blue = { 0, 0, 255, 255 };
 
-	m_pDistanceLabel = new Label("Distance", "Consolas", 40, blue, glm::vec2(Config::SCREEN_WIDTH / 2, 40.0f));
+	m_pDistanceLabel = new Label("Distance", "Consolas", 30, blue, glm::vec2(700, 40.0f));
 	m_pDistanceLabel->setParent(this);
 	addChild(m_pDistanceLabel);
 
-	m_pVelocityLabel = new Label("Velocity", "Consolas", 40, blue, glm::vec2(Config::SCREEN_WIDTH / 2, 100.0f));
+	m_pVelocityLabel = new Label("Velocity", "Consolas", 30, blue, glm::vec2(700, 70.0f));
 	m_pVelocityLabel->setParent(this);
 	addChild(m_pVelocityLabel);
 
-	m_pAngleLabel = new Label("Velocity", "Consolas", 40, blue, glm::vec2(Config::SCREEN_WIDTH / 2, 160.0f));
+	m_pAngleLabel = new Label("Velocity", "Consolas", 30, blue, glm::vec2(700, 100.0f));
 	m_pAngleLabel->setParent(this);
 	addChild(m_pAngleLabel);
+
+	m_pScaleLabel = new Label("Scale = 1.5 PPM", "Consolas", 30, blue, glm::vec2(700, 130.0f));
+	m_pScaleLabel->setParent(this);
+	addChild(m_pScaleLabel);
 }
 
 void PlayScene::calculateAngle()
 {
 	if (m_mousePosition.x > m_pPlayer->getTransform()->position.x && m_mousePosition.y < m_pPlayer->getTransform()->position.y) {
 		m_launchVector = Util::normalize(m_mousePosition - m_pPlayer->getTransform()->position);
-		m_launchAngle = Util::angle(glm::vec2(1.0f, 0.0f), m_launchVector);
+		//m_launchAngle = Util::angle(glm::vec2(1.0f, 0.0f), m_launchVector);
 	}
+}
+
+void PlayScene::resetSim()
+{
+	m_pPlayer->getTransform()->position = glm::vec2(50, m_groundLevel);
+	m_pEnemy->getTransform()->position = glm::vec2(m_pPlayer->getTransform()->position.x + 485 * PX_PER_METER, m_groundLevel);
+	m_pGrenade->spawn(m_pPlayer->getTransform()->position);
+	m_pGrenade->setGrenadeState(SETUP);
+	m_launchAngle = 15.9f;
+	m_launchSpeed = m_launchSpeedDefault;
 }
 
 void PlayScene::reset()
@@ -137,4 +171,86 @@ void PlayScene::launch()
 {
 	m_pGrenade->getRigidBody()->acceleration = m_launchVector * m_launchSpeed;
 	m_pGrenade->setGrenadeState(FLIGHT);
+}
+
+void PlayScene::GUI_Function()
+{
+	// Always open with a NewFrame
+	ImGui::NewFrame();
+
+	// See examples by uncommenting the following - also look at imgui_demo.cpp in the IMGUI filter
+	//ImGui::ShowDemoWindow();
+
+	ImGui::Begin("Settings", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove);
+
+	ImGui::SetWindowPos(ImVec2(0, 0), true);
+
+	ImGui::Separator();
+
+	if (ImGui::Button("Launch"))
+	{
+		launch();
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Reset Grenade"))
+	{
+		reset();
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Reset Sim"))
+	{
+		resetSim();
+	}
+
+	ImGui::Separator();
+
+	
+	if (ImGui::SliderFloat("Launch Angle", &m_launchAngle, 0.0f, 90.0f))
+	{
+		
+	}
+
+	if (ImGui::SliderFloat("Trooper Position", &m_pEnemy->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
+	{
+
+	}
+
+	if (ImGui::SliderFloat("Wookie Position", &m_pPlayer->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
+	{
+
+	}
+
+	if (ImGui::SliderFloat("Projectile Speed", &m_launchSpeed, m_launchSpeedLowest, m_launchSpeedHighest))
+	{
+
+	}
+
+	ImGui::End();
+
+	// Don't Remove this
+	ImGui::Render();
+	ImGuiSDL::Render(ImGui::GetDrawData());
+	ImGui::StyleColorsDark();
+}
+
+void PlayScene::m_buildGrid()
+{
+	const auto size = Config::TILE_SIZE;
+	const auto offset = size * 0.5f;
+
+	m_pGrid = std::vector<Tile*>();
+
+	for (int row = 0; row < Config::ROW_NUM; ++row)
+	{
+		for (int col = 0; col < Config::COL_NUM; ++col)
+		{
+			auto tile = new Tile(glm::vec2(offset + size * col, offset + size * row), glm::vec2(col, row));
+			//addChild(tile);
+			m_pGrid.push_back(tile);
+		}
+	}
 }

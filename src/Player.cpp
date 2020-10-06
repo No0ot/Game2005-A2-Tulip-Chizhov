@@ -28,7 +28,7 @@ void Player::draw()
 	const auto x = getTransform()->position.x;
 	const auto y = getTransform()->position.y;
 
-	TextureManager::Instance()->draw("wookie", x, y, getWidth(), getHeight(), 0, 255, true);
+	TextureManager::Instance()->draw("wookie", x, y, getWidth(), getHeight(), 0, 255, true, SDL_FLIP_HORIZONTAL);
 }
 
 void Player::update(float deltaTime)

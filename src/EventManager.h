@@ -7,6 +7,7 @@
 #include "glm/vec2.hpp"
 #include "MouseButtons.h"
 #include "GameController.h"
+#include "IMGUI/imgui.h"
 
 /* singleton with magic static */
 class EventManager
@@ -35,6 +36,9 @@ public:
 
 	// gamecontroller events
 	GameController* getGameController(int controller_number);
+
+	//IMGUI
+	bool isIMGUIActive();
 	
 private:
 	// Hide Constructor and Destructor 
@@ -58,8 +62,15 @@ private:
 	// game controller functions
 	void m_initializeControllers();
 
+	// IMGUI IO
+	void m_IMGUI_Keymap();
+
 	/*------- PRIVATE MEMBER VARIABLES -------*/
 	
+		// IMGUI variables
+	ImGuiIO& m_io;
+	bool m_isIMGUIActive = true;
+
 	// keyboard states array
 	const Uint8* m_keyStates;
 

@@ -41,6 +41,7 @@ public:
 	static float dot(glm::vec2 lhs, glm::vec2 rhs);
 	static float signedAngle(glm::vec2 from, glm::vec2 to);
 	static glm::vec2 rotateVector(glm::vec2 origin, float angle);
+	static glm::vec2 getVector(float angle);
 	static glm::vec2 lerpVector(glm::vec2 from, glm::vec2 to, float t);
 
 	// debugging convenience functions

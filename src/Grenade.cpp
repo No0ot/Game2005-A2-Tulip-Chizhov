@@ -20,8 +20,8 @@ void Grenade::draw()
 {
 	const auto x = getTransform()->position.x;
 	const auto y = getTransform()->position.y;
-
-	TextureManager::Instance()->draw("ThermalDetonator", x, y, getWidth(), getHeight(), 0, 255, true);
+	if(getGrenadeState() != SETUP)
+		TextureManager::Instance()->draw("ThermalDetonator", x, y, getWidth(), getHeight(), 0, 255, true);
 }
 
 void Grenade::update(float deltaTime)
