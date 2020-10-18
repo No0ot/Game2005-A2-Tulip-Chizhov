@@ -34,5 +34,7 @@ public:
 	void setGroundHeight(float n) { m_groundHeight = n; }
 	float getContactRadius() { return m_contactRadius; }
 	void setContactRadius(float n) { m_contactRadius = n; }
+
+	float m_angleRotation;
 };
 #endif 

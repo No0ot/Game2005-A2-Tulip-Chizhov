@@ -34,6 +34,6 @@ public:
 
 };
 
-const float PX_PER_METER = 1.5;
+const float PX_PER_METER = 10;
 
 #endif /* defined (__CONFIG__) */

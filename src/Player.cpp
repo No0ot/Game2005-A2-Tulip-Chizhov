@@ -19,8 +19,8 @@ Player::Player()
 	SetSprint(false);
 
 	//Ramp Set up
-	rampWidth = 100.0f;
-	rampHeight = 100.0f;
+	rampWidth = 400.0f;
+	rampHeight = 300.0f;
 
 	rampVerticalStart = getTransform()->position;
 	rampVerticalEnd = glm::vec2(getTransform()->position.x, getTransform()->position.y + getHeight());

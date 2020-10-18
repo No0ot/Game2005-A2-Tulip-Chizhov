@@ -38,14 +38,14 @@ void PlayScene::update(float deltaTime)
 	updateDisplayList(deltaTime);
 
 	m_launchVector = Util::getVector( -m_launchAngle);
+	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x,m_pPlayer->getTransform()->position.y - m_pGrenade->getHeight() };
 
 	switch (m_pGrenade->getGrenadeState()) {
 	case SETUP:
-		//calculateAngle();
-		m_pGrenade->getTransform()->position = m_pPlayer->getTransform()->position;
-		m_pDistanceLabel->setText("Wookie Distance to Trooper = " + std::to_string(m_pPlayer->checkDistance(m_pEnemy) / PX_PER_METER));
-		m_pVelocityLabel->setText("Launch Velocity = " + std::to_string(m_launchSpeed) + "m/s");
-		m_pAngleLabel->setText("Angle of attack = " + std::to_string(m_launchAngle));
+		calculateAngle();
+		m_launchVector = Util::getVector(-m_launchAngle + 90); // not sure why this is the corret angle for the launch vector but it works
+		m_pGrenade->getTransform()->position = grenadespawnPos;
+		m_pAngleLabel->setText("angle = " + std::to_string(m_launchAngle));
 		break;
 	case FLIGHT:
 		m_pVelocityLabel->setText("Grenade Height = " + std::to_string((m_groundLevel - m_pGrenade->getTransform()->position.y) / PX_PER_METER) + "m");
@@ -104,7 +104,7 @@ void PlayScene::start()
 	m_pPlayer = new Player();
 	m_pPlayer->setParent(this);
 	addChild(m_pPlayer);
-	m_pPlayer->spawn(glm::vec2(50, m_groundLevel - 50));
+	m_pPlayer->spawn(glm::vec2(Config::SCREEN_WIDTH / 4, Config::SCREEN_HEIGHT / 4));
 	//m_pPlayer->setHeight(10.0f);
 	//m_pPlayer->setWidth(10.0f);
 	
@@ -147,31 +147,40 @@ void PlayScene::start()
 
 void PlayScene::calculateAngle()
 {
-	if (m_mousePosition.x > m_pPlayer->getTransform()->position.x && m_mousePosition.y < m_pPlayer->getTransform()->position.y) {
-		m_launchVector = Util::normalize(m_mousePosition - m_pPlayer->getTransform()->position);
-		//m_launchAngle = Util::angle(glm::vec2(1.0f, 0.0f), m_launchVector);
-	}
+	//float magA = Util::magnitude(m_pPlayer->rampVerticalEnd - m_pPlayer->rampVerticalStart);
+	//float magB = Util::magnitude(m_pPlayer->rampDiagonalStart - m_pPlayer->rampVerticalStart);
+	//float dot = Util::dot(m_pPlayer->rampVerticalEnd, m_pPlayer->rampDiagonalStart);
+
+	m_launchAngle = Util::angle(m_pPlayer->rampVerticalEnd - m_pPlayer->rampVerticalStart, m_pPlayer->rampDiagonalStart - m_pPlayer->rampVerticalStart);
+	m_pGrenade->m_angleRotation = -m_launchAngle;
 }
 
 void PlayScene::resetSim()
 {
+	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x,m_pPlayer->getTransform()->position.y - m_pGrenade->getHeight() /2 };
 	m_pPlayer->getTransform()->position = glm::vec2(50, m_groundLevel);
 	m_pEnemy->getTransform()->position = glm::vec2(m_pPlayer->getTransform()->position.x + 485 * PX_PER_METER, m_groundLevel);
-	m_pGrenade->spawn(m_pPlayer->getTransform()->position);
+	m_pGrenade->spawn(grenadespawnPos);
 	m_pGrenade->setGrenadeState(SETUP);
-	m_launchAngle = 15.9f;
+	//m_launchAngle = 15.9f;
 	m_launchSpeed = m_launchSpeedDefault;
 }
 
 void PlayScene::reset()
 {
-	m_pGrenade->spawn(m_pPlayer->getTransform()->position);
+	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x, m_pPlayer->getTransform()->position.y - (m_pGrenade->getHeight() /2) };
+	m_pGrenade->spawn(grenadespawnPos);
 	m_pGrenade->setGrenadeState(SETUP);
 }
 
 void PlayScene::launch()
 {
-	m_pGrenade->getRigidBody()->acceleration = m_launchVector * m_launchSpeed;
+	float accelX = 9.8 * sin(m_launchAngle);
+	float accelY = 9.8 * cos(-m_launchAngle);
+	float x = m_pGrenade->m_mass * accelX;
+	float y = m_pGrenade->m_mass * accelY;
+
+	m_pGrenade->getRigidBody()->acceleration = glm::vec2(x,-y);
 	m_pGrenade->setGrenadeState(FLIGHT);
 }
 

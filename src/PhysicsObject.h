@@ -25,7 +25,8 @@ public:
 	//Movement
 	void applyGravity(float deltaTime);
 
-	//temp
+	
+	float m_mass;
 
 	//get/set
 };

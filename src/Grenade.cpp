@@ -5,11 +5,12 @@
 
 Grenade::Grenade()
 {
-	TextureManager::Instance()->load("../Assets/textures/ThermalDetonator.png", "ThermalDetonator");
+	TextureManager::Instance()->load("../Assets/textures/square.png", "square");
 
-	auto size = TextureManager::Instance()->getTextureSize("ThermalDetonator");
+	auto size = TextureManager::Instance()->getTextureSize("square");
 	setWidth(size.x);
 	setHeight(size.y);
+	m_mass = 12.8;
 
 	getTransform()->position = glm::vec2(400.0f, 300.0f);
 	getRigidBody()->velocity = glm::vec2(0.0f, 0.0f);
@@ -20,8 +21,11 @@ void Grenade::draw()
 {
 	const auto x = getTransform()->position.x;
 	const auto y = getTransform()->position.y;
-	if(getGrenadeState() != SETUP)
-		TextureManager::Instance()->draw("ThermalDetonator", x, y, getWidth(), getHeight(), 0, 255, true);
+	//if(getGrenadeState() != SETUP)
+		TextureManager::Instance()->draw("square", x, y, getWidth(), getHeight(), m_angleRotation, 255, true);
+
+	//glm::vec4 red {1.0f,0.0f,0.0f,1.0f};
+	//Util::DrawRect(getTransform()->position, getWidth(), getHeight(), red);
 }
 
 void Grenade::update(float deltaTime)
@@ -29,7 +33,7 @@ void Grenade::update(float deltaTime)
 	switch (getGrenadeState()) {
 	case FLIGHT:
 		//apply acceleration
-		applyGravity(deltaTime);
+		//applyGravity(deltaTime);
 
 		//update position
 		getRigidBody()->velocity += getRigidBody()->acceleration;
