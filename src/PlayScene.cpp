@@ -8,6 +8,8 @@
 #include "IMGUI_SDL/imgui_sdl.h"
 #include "Renderer.h"
 
+
+
 PlayScene::PlayScene()
 {
 	PlayScene::start();
@@ -102,7 +104,7 @@ void PlayScene::start()
 	m_pPlayer = new Player();
 	m_pPlayer->setParent(this);
 	addChild(m_pPlayer);
-	m_pPlayer->spawn(glm::vec2(50, m_groundLevel));
+	m_pPlayer->spawn(glm::vec2(50, m_groundLevel - 50));
 	//m_pPlayer->setHeight(10.0f);
 	//m_pPlayer->setWidth(10.0f);
 	
@@ -209,22 +211,22 @@ void PlayScene::GUI_Function()
 	ImGui::Separator();
 
 	
-	if (ImGui::SliderFloat("Launch Angle", &m_launchAngle, 0.0f, 90.0f))
+	if (ImGui::SliderFloat("Ramp Width", &m_pPlayer->rampWidth, 1.0f, 1000.0f))
 	{
 		
 	}
 
-	if (ImGui::SliderFloat("Trooper Position", &m_pEnemy->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
+	if (ImGui::SliderFloat("Ramp Height", &m_pPlayer->rampHeight, 1.0f, 1000.0f))
 	{
 
 	}
 
-	if (ImGui::SliderFloat("Wookie Position", &m_pPlayer->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
+	if (ImGui::SliderFloat("Ramp Position (X)", &m_pPlayer->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
 	{
 
 	}
 
-	if (ImGui::SliderFloat("Projectile Speed", &m_launchSpeed, m_launchSpeedLowest, m_launchSpeedHighest))
+	if (ImGui::SliderFloat("Ramp Position (Y)", &m_pPlayer->getTransform()->position.y, 0.0f, Config::SCREEN_HEIGHT))
 	{
 
 	}

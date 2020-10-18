@@ -44,6 +44,17 @@ public:
 	void SetSprint(bool n) { m_sprintFlag = n; }
 	glm::vec2 GetTargetPosition() { return m_targetPosition; }
 	void SetTargetPosition(glm::vec2 n) { m_targetPosition = n; }
+
+	// Ramp variables
+	float rampWidth;
+	float rampHeight;
+
+	glm::vec2 rampVerticalStart;
+	glm::vec2 rampVerticalEnd;
+	glm::vec2 rampHorizontalStart;
+	glm::vec2 rampHorizontalEnd;
+	glm::vec2 rampDiagonalStart;
+	glm::vec2 rampDiagonalEnd;
 };
 
 #endif /* defined (__PLAYER__) */

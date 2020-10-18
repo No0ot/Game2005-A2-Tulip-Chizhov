@@ -22,7 +22,7 @@ void Tile::draw()
 	const auto x = getTransform()->position.x;
 	const auto y = getTransform()->position.y;
 
-	TextureManager::Instance()->draw("tile", x, y, getWidth(), getHeight(), 0, 255, true);
+	//TextureManager::Instance()->draw("tile", x, y, getWidth(), getHeight(), 0, 255, true);
 }
 
 void Tile::update(float deltaTime)
