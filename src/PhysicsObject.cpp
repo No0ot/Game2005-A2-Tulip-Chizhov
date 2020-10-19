@@ -8,7 +8,7 @@ void PhysicsObject::applyGravity(float deltaTime)
 void PhysicsObject::applyNormalForce(float deltaTime)
 {
 
-	if (isEnabled()) getRigidBody()->acceleration.y -= ((GRAVITY * m_mass) * deltaTime) * 2;
+	if (isEnabled()) getRigidBody()->acceleration.y -= ((GRAVITY * m_mass) * deltaTime);
 	
 }
 

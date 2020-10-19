@@ -52,7 +52,7 @@ void PlayScene::update(float deltaTime)
 		if (CollisionManager::circleLineCheck(m_pPlayer->rampDiagonalStart, m_pPlayer->rampDiagonalEnd, m_pGrenade))
 		{
 			std::cout << "SUCCESS" << std::endl;
-			m_pGrenade->getRigidBody()->acceleration.y = 0;
+			m_pGrenade->getRigidBody()->velocity.y = 0;
 			m_pGrenade->applyNormalForce(deltaTime);
 		}
 		m_pVelocityLabel->setText("Grenade Height = " + std::to_string((m_groundLevel - m_pGrenade->getTransform()->position.y) / PX_PER_METER) + "m");
