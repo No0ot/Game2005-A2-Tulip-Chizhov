@@ -22,12 +22,14 @@ public:
 	static bool lineRectCheck(glm::vec2 line1_start, glm::vec2 line1_end, glm::vec2 rec_start, float rect_width, float rect_height);
 	static int minSquaredDistanceLineLine(glm::vec2 line1_start, glm::vec2 line1_end, glm::vec2 line2_start, glm::vec2 line2_end);
 	static bool lineAABBCheck(Ship* object1, GameObject* object2);
-
+	static bool circleLineCheck(glm::vec2 line1_start, glm::vec2 line1_end, GameObject* object);
 	static int circleAABBsquaredDistance(glm::vec2 circle_centre, int circle_radius, glm::vec2 box_start, int box_width, int box_height);
 	static bool circleAABBCheck(GameObject* object1, GameObject* object2);
 
 	static bool pointRectCheck(glm::vec2 point, glm::vec2 rect_start, float rect_width, float rect_height);
-	
+	static bool pointCircleCheck(glm::vec2 point, glm::vec2 circle_center, float circle_radius);
+	static bool linePointCheck(glm::vec2 line_start, glm::vec2 line_end, glm::vec2 point);
+
 private:
 	CollisionManager();
 	~CollisionManager();

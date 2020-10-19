@@ -24,6 +24,7 @@ public:
 
 	//Movement
 	void applyGravity(float deltaTime);
+	void applyNormalForce(float deltaTime);
 
 	
 	float m_mass;

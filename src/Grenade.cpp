@@ -24,8 +24,8 @@ void Grenade::draw()
 	//if(getGrenadeState() != SETUP)
 		TextureManager::Instance()->draw("square", x, y, getWidth(), getHeight(), m_angleRotation, 255, true);
 
-	//glm::vec4 red {1.0f,0.0f,0.0f,1.0f};
-	//Util::DrawRect(getTransform()->position, getWidth(), getHeight(), red);
+	glm::vec4 green {0.0f,1.0f,0.0f,1.0f};
+	Util::DrawCircle(getTransform()->position, getWidth() /2, green);
 }
 
 void Grenade::update(float deltaTime)
@@ -33,8 +33,8 @@ void Grenade::update(float deltaTime)
 	switch (getGrenadeState()) {
 	case FLIGHT:
 		//apply acceleration
-		//applyGravity(deltaTime);
-
+		applyGravity(deltaTime);
+		getRigidBody()->acceleration.x = (9.8 * sin(-m_inclineAngle)) / PX_PER_METER;
 		//update position
 		getRigidBody()->velocity += getRigidBody()->acceleration;
 		getTransform()->position.x += getRigidBody()->velocity.x * deltaTime * PX_PER_METER;

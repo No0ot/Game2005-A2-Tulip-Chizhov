@@ -204,6 +204,43 @@ bool CollisionManager::lineAABBCheck(Ship* object1, GameObject* object2)
 	return false;
 }
 
+bool CollisionManager::circleLineCheck(glm::vec2 line1_start, glm::vec2 line1_end, GameObject* object)
+{
+	const auto x1 = line1_start.x;
+	const auto x2 = line1_end.x;
+	const auto y1 = line1_start.y;
+	const auto y2 = line1_end.y;
+
+	const auto circleCentre = object->getTransform()->position;
+	const int circleRadius = std::max(object->getWidth() * 0.5f, object->getHeight() * 0.5f);
+
+	bool inside1 = pointCircleCheck(line1_start, circleCentre, circleRadius);
+	bool inside2 = pointCircleCheck(line1_end, circleCentre, circleRadius);
+	if (inside1 || inside2) 
+		return true;
+
+	float length = Util::distance(line1_start, line1_end);
+
+	float dot = (((circleCentre.x - x1) * (x2 - x1)) + ((circleCentre.y - y1) * (y2 - y1))) / pow(length, 2);
+
+
+	float closestX = x1 + (dot * (x2 - x1));
+	float closestY = y1 + (dot * (y2 - y1));
+
+	bool onSegment = linePointCheck(line1_start, line1_end, glm::vec2(closestX, closestY));
+	if (!onSegment)
+		return false;
+
+	float distX = closestX - circleCentre.x;
+	float distY = closestY - circleCentre.y;
+	float distance = sqrt((distX * distX) + (distY * distY));
+
+	if (distance <= circleRadius)
+		return true;
+
+	return false;
+}
+
 int CollisionManager::circleAABBsquaredDistance(const glm::vec2 circle_centre, int circle_radius, const glm::vec2 box_start, const int box_width, const int box_height)
 {
 	auto dx = std::max(box_start.x - circle_centre.x, 0.0f);
@@ -312,6 +349,35 @@ bool CollisionManager::pointRectCheck(const glm::vec2 point, const glm::vec2 rec
 	{
 		return true;
 	}
+	return false;
+}
+
+bool CollisionManager::pointCircleCheck(glm::vec2 point, glm::vec2 circle_center, float circle_radius)
+{
+	float distX = point.x - circle_center.x;
+	float distY = point.y - circle_center.y;
+	float distance = sqrt((distX * distX) + (distY * distY));
+
+	if (distance <= circle_radius)
+		return true;
+
+	
+	return false;
+}
+
+bool CollisionManager::linePointCheck(glm::vec2 line_start, glm::vec2 line_end, glm::vec2 point)
+{
+	float d1 = Util::distance(point, line_start);
+	float d2 = Util::distance(point, line_end);
+
+	float lineLength = Util::distance(line_start, line_end);
+
+	float buffer = 0.1;
+
+	if (d1 + d2 >= lineLength - buffer && d1 + d2 <= lineLength + buffer)
+		return true;
+
+
 	return false;
 }
 

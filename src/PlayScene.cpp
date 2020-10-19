@@ -43,11 +43,18 @@ void PlayScene::update(float deltaTime)
 	switch (m_pGrenade->getGrenadeState()) {
 	case SETUP:
 		calculateAngle();
-		m_launchVector = Util::getVector(-m_launchAngle + 90); // not sure why this is the corret angle for the launch vector but it works
-		m_pGrenade->getTransform()->position = grenadespawnPos;
-		m_pAngleLabel->setText("angle = " + std::to_string(m_launchAngle));
+		calculateIncline();
+		m_launchVector = Util::getVector(m_inclineAngle); // not sure why this is the corret angle for the launch vector but it works
+		//m_pGrenade->getTransform()->position = grenadespawnPos;
+		m_pAngleLabel->setText("angle = " + std::to_string(m_inclineAngle));
 		break;
 	case FLIGHT:
+		if (CollisionManager::circleLineCheck(m_pPlayer->rampDiagonalStart, m_pPlayer->rampDiagonalEnd, m_pGrenade))
+		{
+			std::cout << "SUCCESS" << std::endl;
+			m_pGrenade->getRigidBody()->acceleration.y = 0;
+			m_pGrenade->applyNormalForce(deltaTime);
+		}
 		m_pVelocityLabel->setText("Grenade Height = " + std::to_string((m_groundLevel - m_pGrenade->getTransform()->position.y) / PX_PER_METER) + "m");
 		break;
 	case LANDED:
@@ -147,12 +154,14 @@ void PlayScene::start()
 
 void PlayScene::calculateAngle()
 {
-	//float magA = Util::magnitude(m_pPlayer->rampVerticalEnd - m_pPlayer->rampVerticalStart);
-	//float magB = Util::magnitude(m_pPlayer->rampDiagonalStart - m_pPlayer->rampVerticalStart);
-	//float dot = Util::dot(m_pPlayer->rampVerticalEnd, m_pPlayer->rampDiagonalStart);
-
 	m_launchAngle = Util::angle(m_pPlayer->rampVerticalEnd - m_pPlayer->rampVerticalStart, m_pPlayer->rampDiagonalStart - m_pPlayer->rampVerticalStart);
 	m_pGrenade->m_angleRotation = -m_launchAngle;
+}
+
+void PlayScene::calculateIncline()
+{
+	m_inclineAngle = Util::angle(m_pPlayer->rampVerticalStart - m_pPlayer->rampDiagonalStart, m_pPlayer->rampHorizontalStart - m_pPlayer->rampDiagonalStart);
+	m_pGrenade->m_inclineAngle = m_inclineAngle;
 }
 
 void PlayScene::resetSim()
@@ -168,19 +177,14 @@ void PlayScene::resetSim()
 
 void PlayScene::reset()
 {
-	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x, m_pPlayer->getTransform()->position.y - (m_pGrenade->getHeight() /2) };
+	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x, m_pPlayer->getTransform()->position.y - (m_pGrenade->getHeight() ) };
 	m_pGrenade->spawn(grenadespawnPos);
 	m_pGrenade->setGrenadeState(SETUP);
 }
 
 void PlayScene::launch()
 {
-	float accelX = 9.8 * sin(m_launchAngle);
-	float accelY = 9.8 * cos(-m_launchAngle);
-	float x = m_pGrenade->m_mass * accelX;
-	float y = m_pGrenade->m_mass * accelY;
-
-	m_pGrenade->getRigidBody()->acceleration = glm::vec2(x,-y);
+	//m_pGrenade->getRigidBody()->acceleration = m_launchVector * m_launchSpeed;
 	m_pGrenade->setGrenadeState(FLIGHT);
 }
 
@@ -239,7 +243,15 @@ void PlayScene::GUI_Function()
 	{
 
 	}
+	if (ImGui::SliderFloat("Box Position (X)", &m_pGrenade->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
+	{
 
+	}
+
+	if (ImGui::SliderFloat("Box Position (Y)", &m_pGrenade->getTransform()->position.y, 0.0f, Config::SCREEN_HEIGHT))
+	{
+
+	}
 	ImGui::End();
 
 	// Don't Remove this

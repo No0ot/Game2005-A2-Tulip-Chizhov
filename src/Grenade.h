@@ -36,5 +36,6 @@ public:
 	void setContactRadius(float n) { m_contactRadius = n; }
 
 	float m_angleRotation;
+	float m_inclineAngle;
 };
 #endif 
