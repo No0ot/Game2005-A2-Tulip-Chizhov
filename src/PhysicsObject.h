@@ -8,7 +8,7 @@
 class PhysicsObject : public DisplayObject
 {
 private:
-	const float GRAVITY = 9.8f;
+	const float gravity = 9.8f;
 
 public:
 	PhysicsObject() = default;
@@ -20,7 +20,7 @@ public:
 	virtual void clean() = 0;
 
 	virtual void spawn(glm::vec2 position) = 0;
-	virtual void launch(glm::vec2 acceleration) = 0;
+	virtual void launch() = 0;
 
 	//Movement
 	void applyGravity(float deltaTime);

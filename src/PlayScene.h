@@ -24,9 +24,6 @@ public:
 	virtual void handleEvents(float deltaTime) override;
 	virtual void start() override;
 
-	void calculateAngle();
-	void calculateIncline();
-
 	void resetSim();
 	void reset();
 	void launch();
@@ -53,14 +50,6 @@ private:
 	void m_buildGrid();
 
 	bool m_inputValid;
-	glm::vec2 m_mousePosition;
-	glm::vec2 m_launchVector;
-	float m_inclineAngle;
-	float m_launchAngle = 15.9f;
-	float m_launchSpeed, m_launchSpeedDefault = 0, m_launchSpeedLowest = 5, m_launchSpeedHighest = 155;
-	float m_groundLevel = 800.0f;
-
-	float m_distanceToTarget = 485.0f;
 
 	std::vector<Tile*> m_pGrid;
 	Player* m_pPlayer;
@@ -74,6 +63,16 @@ private:
 
 	Button* m_pBackButton;
 	Button* m_pNextButton;
+
+	//defaults
+	glm::vec2 rampOriginDefault = {300.0f, 600.0f};
+
+	//visuals
+	SDL_Rect StartSurface;
+	SDL_Rect SlideSurface;
+
+	void BuildStartSurface();
+	void BuildSlideSurface();
 };
 
 #endif /* defined (__PLAY_SCENE__) */

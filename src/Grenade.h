@@ -4,17 +4,19 @@
 
 #include "PhysicsObject.h"
 
+class Player;
+
 enum GrenadeState {
 	SETUP,
-	FLIGHT,
-	LANDED
+	INCLINE,
+	FLAT,
+	STOP
 };
 
 class Grenade : public PhysicsObject
 {
 private:
 	GrenadeState m_state;
-	float m_groundHeight, m_contactRadius = 5.0f;
 public:
 	Grenade();
 	~Grenade() = default;
@@ -23,19 +25,18 @@ public:
 	void update(float deltaTime);
 	void clean();
 
-	void spawn(glm::vec2 position);
-	void launch(glm::vec2 acceleration);
+	void spawn(glm::vec2 position) override;
+	void launch() override;
 
 	float checkDistance(GameObject* pGameObject);
 
 	GrenadeState getGrenadeState() { return m_state; }
 	void setGrenadeState(GrenadeState n) { m_state = n; }
-	float getGroundHeight() { return m_groundHeight; }
-	void setGroundHeight(float n) { m_groundHeight = n; }
-	float getContactRadius() { return m_contactRadius; }
-	void setContactRadius(float n) { m_contactRadius = n; }
 
-	float m_angleRotation;
-	float m_inclineAngle;
+	//a2 sim members
+	Player* slope;
+	glm::vec2 Ground;
+	float rotation;
+	void CalculatePosition();
 };
 #endif 

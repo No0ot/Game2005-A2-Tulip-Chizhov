@@ -12,6 +12,7 @@
 
 PlayScene::PlayScene()
 {
+	TextureManager::Instance()->load("../Assets/textures/background.png", "background");
 	PlayScene::start();
 }
 
@@ -20,16 +21,17 @@ PlayScene::~PlayScene()
 
 void PlayScene::draw()
 {
-	for (auto tile : m_pGrid)
-		tile->draw();
+	TextureManager::Instance()->draw("background", Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 2, Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, 0, 255, true, SDL_FLIP_NONE);
 
 	if (EventManager::Instance().isIMGUIActive())
 	{
 		GUI_Function();
 	}
 
+	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 232, 236, 241, 255);
+	SDL_RenderFillRect(Renderer::Instance()->getRenderer(), &StartSurface);
+	SDL_RenderFillRect(Renderer::Instance()->getRenderer(), &SlideSurface);
 	drawDisplayList();
-	
 	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
 }
 
@@ -37,32 +39,11 @@ void PlayScene::update(float deltaTime)
 {
 	updateDisplayList(deltaTime);
 
-	m_launchVector = Util::getVector( -m_launchAngle);
-	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x,m_pPlayer->getTransform()->position.y - m_pGrenade->getHeight() };
-
-	switch (m_pGrenade->getGrenadeState()) {
-	case SETUP:
-		calculateAngle();
-		calculateIncline();
-		m_launchVector = Util::getVector(m_inclineAngle); // not sure why this is the corret angle for the launch vector but it works
-		//m_pGrenade->getTransform()->position = grenadespawnPos;
-		m_pAngleLabel->setText("angle = " + std::to_string(m_inclineAngle));
-		break;
-	case FLIGHT:
-		if (CollisionManager::circleLineCheck(m_pPlayer->rampDiagonalStart, m_pPlayer->rampDiagonalEnd, m_pGrenade))
-		{
-			std::cout << "SUCCESS" << std::endl;
-			m_pGrenade->getRigidBody()->velocity.y = 0;
-			m_pGrenade->applyNormalForce(deltaTime);
-		}
-		m_pVelocityLabel->setText("Grenade Height = " + std::to_string((m_groundLevel - m_pGrenade->getTransform()->position.y) / PX_PER_METER) + "m");
-		break;
-	case LANDED:
-		if (m_pGrenade->checkDistance(m_pEnemy) <= m_pGrenade->getContactRadius() + m_pEnemy->getWidth() * 0.5f)
-			m_pDistanceLabel->setText("Troopers hit");
-		else m_pDistanceLabel->setText("LZ " + std::to_string(m_pGrenade->checkDistance(m_pEnemy) / PX_PER_METER) + " meters away from enemy");
-		break;
-	}
+	m_pDistanceLabel->setText("Box position X: " + std::to_string(m_pGrenade->getTransform()->position.x) + ", Y: " + std::to_string(m_pGrenade->getTransform()->position.y));
+	m_pVelocityLabel->setText("Box velocity on X axis: " + std::to_string(m_pGrenade->getRigidBody()->velocity.x / PX_PER_METER) + " m/s");
+	m_pAngleLabel->setText("Box angle: " + std::to_string(Util::Rad2Deg * m_pGrenade->rotation) + " degrees");
+	if (m_pGrenade->getGrenadeState()!=SETUP)
+		m_pScaleLabel->setText("Current Friction Coefficient: " + (m_pGrenade->getGrenadeState() == INCLINE ? "0" : std::to_string(-m_pPlayer->mu)));
 }
 
 void PlayScene::clean()
@@ -73,27 +54,6 @@ void PlayScene::clean()
 void PlayScene::handleEvents(float deltaTime)
 {
 	EventManager::Instance().update();
-	m_mousePosition = EventManager::Instance().getMousePosition();
-
-	if (EventManager::Instance().getMouseButton(0)) {
-		switch (m_pGrenade->getGrenadeState()) {
-		/*case SETUP:
-			if (m_inputValid) {
-				launch();
-				m_inputValid = false;
-			}
-			break;
-		case LANDED:
-			if (m_inputValid) {
-				reset();
-				m_inputValid = false;
-			}
-			break;
-		default:
-			break;*/
-		}
-	}
-	else m_inputValid = true;
 
 	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_ESCAPE))
 	{
@@ -103,36 +63,19 @@ void PlayScene::handleEvents(float deltaTime)
 
 void PlayScene::start()
 {
-	m_launchSpeed = m_launchSpeedDefault;
-	
-	m_buildGrid();
-
-	// Player Sprite
+	//// Player Sprite
 	m_pPlayer = new Player();
 	m_pPlayer->setParent(this);
 	addChild(m_pPlayer);
-	m_pPlayer->spawn(glm::vec2(Config::SCREEN_WIDTH / 4, Config::SCREEN_HEIGHT / 4));
-	//m_pPlayer->setHeight(10.0f);
-	//m_pPlayer->setWidth(10.0f);
 	
-	// Enemy Sprite
-	m_pEnemy = new Enemy();
-	m_pEnemy->setParent(this);
-	addChild(m_pEnemy);
-	m_pEnemy->spawn(glm::vec2(m_pPlayer->getTransform()->position.x + 485*PX_PER_METER, m_groundLevel));
-	//m_pEnemy->setHeight(10.0f);
-	//m_pEnemy->setWidth(15.0f);
-
+	// Box Sprite
 	m_pGrenade = new Grenade();
 	m_pGrenade->setParent(this);
 	addChild(m_pGrenade);
-	//m_pGrenade->setHeight(5.0f);
-	//m_pGrenade->setWidth(5.0f);
-	m_pGrenade->setGroundHeight(m_groundLevel);
-	reset();
+	m_pGrenade->slope = m_pPlayer;
+	resetSim();
 
 	// Labels
-	
 	const SDL_Color blue = { 0, 0, 255, 255 };
 
 	m_pDistanceLabel = new Label("Distance", "Consolas", 30, blue, glm::vec2(700, 40.0f));
@@ -147,45 +90,32 @@ void PlayScene::start()
 	m_pAngleLabel->setParent(this);
 	addChild(m_pAngleLabel);
 
-	m_pScaleLabel = new Label("Scale = 1.5 PPM", "Consolas", 30, blue, glm::vec2(700, 130.0f));
+	m_pScaleLabel = new Label("Scale = 100 px/m", "Consolas", 30, blue, glm::vec2(700, 130.0f));
 	m_pScaleLabel->setParent(this);
 	addChild(m_pScaleLabel);
-}
 
-void PlayScene::calculateAngle()
-{
-	m_launchAngle = Util::angle(m_pPlayer->rampVerticalEnd - m_pPlayer->rampVerticalStart, m_pPlayer->rampDiagonalStart - m_pPlayer->rampVerticalStart);
-	m_pGrenade->m_angleRotation = -m_launchAngle;
-}
-
-void PlayScene::calculateIncline()
-{
-	m_inclineAngle = Util::angle(m_pPlayer->rampVerticalStart - m_pPlayer->rampDiagonalStart, m_pPlayer->rampHorizontalStart - m_pPlayer->rampDiagonalStart);
-	m_pGrenade->m_inclineAngle = m_inclineAngle;
+	//graphics
+	BuildStartSurface();
+	BuildSlideSurface();
 }
 
 void PlayScene::resetSim()
 {
-	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x,m_pPlayer->getTransform()->position.y - m_pGrenade->getHeight() /2 };
-	m_pPlayer->getTransform()->position = glm::vec2(50, m_groundLevel);
-	m_pEnemy->getTransform()->position = glm::vec2(m_pPlayer->getTransform()->position.x + 485 * PX_PER_METER, m_groundLevel);
-	m_pGrenade->spawn(grenadespawnPos);
-	m_pGrenade->setGrenadeState(SETUP);
-	//m_launchAngle = 15.9f;
-	m_launchSpeed = m_launchSpeedDefault;
+	m_pPlayer->spawn(glm::vec2(Config::SCREEN_WIDTH / 4, (Config::SCREEN_HEIGHT / 4) * 3), 4, 3);
+	m_pPlayer->BuildRamp();
+	reset();
 }
 
 void PlayScene::reset()
 {
-	glm::vec2 grenadespawnPos = { m_pPlayer->getTransform()->position.x, m_pPlayer->getTransform()->position.y - (m_pGrenade->getHeight() ) };
-	m_pGrenade->spawn(grenadespawnPos);
-	m_pGrenade->setGrenadeState(SETUP);
+	m_pGrenade->spawn(m_pPlayer->Rise);
+	BuildStartSurface();
+	BuildSlideSurface();
 }
 
 void PlayScene::launch()
 {
-	//m_pGrenade->getRigidBody()->acceleration = m_launchVector * m_launchSpeed;
-	m_pGrenade->setGrenadeState(FLIGHT);
+	m_pGrenade->launch();
 }
 
 void PlayScene::GUI_Function()
@@ -202,14 +132,15 @@ void PlayScene::GUI_Function()
 
 	ImGui::Separator();
 
-	if (ImGui::Button("Launch"))
+	if (ImGui::Button("Release"))
 	{
-		launch();
+		if (m_pGrenade->getGrenadeState() == SETUP)
+			launch();
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Reset Grenade"))
+	if (ImGui::Button("Reset Box"))
 	{
 		reset();
 	}
@@ -224,33 +155,33 @@ void PlayScene::GUI_Function()
 	ImGui::Separator();
 
 	
-	if (ImGui::SliderFloat("Ramp Width", &m_pPlayer->rampWidth, 1.0f, 1000.0f))
+	if (ImGui::SliderFloat("Ramp Width", &m_pPlayer->rampWidth, 1.0f, 10.0f))
 	{
-		
+		m_pPlayer->BuildRamp();
+		reset();
 	}
 
-	if (ImGui::SliderFloat("Ramp Height", &m_pPlayer->rampHeight, 1.0f, 1000.0f))
+	if (ImGui::SliderFloat("Ramp Height", &m_pPlayer->rampHeight, 1.0f, 10.0f))
 	{
-
+		m_pPlayer->BuildRamp();
+		reset();
 	}
 
-	if (ImGui::SliderFloat("Ramp Position (X)", &m_pPlayer->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
+	if (ImGui::SliderFloat("Ramp Position (X)", &m_pPlayer->Origin.x, 0.0f, Config::SCREEN_WIDTH))
 	{
-
+		m_pPlayer->spawn(m_pPlayer->Origin, m_pPlayer->rampWidth, m_pPlayer->rampHeight);
+		reset();
 	}
 
-	if (ImGui::SliderFloat("Ramp Position (Y)", &m_pPlayer->getTransform()->position.y, 0.0f, Config::SCREEN_HEIGHT))
+	if (ImGui::SliderFloat("Ramp Position (Y)", &m_pPlayer->Origin.y, 0.0f, Config::SCREEN_HEIGHT))
 	{
-
+		m_pPlayer->spawn(m_pPlayer->Origin, m_pPlayer->rampWidth, m_pPlayer->rampHeight);
+		reset();
 	}
-	if (ImGui::SliderFloat("Box Position (X)", &m_pGrenade->getTransform()->position.x, 0.0f, Config::SCREEN_WIDTH))
+	if (ImGui::SliderFloat("Box Position (X)", &m_pGrenade->Ground.x, 0.0f, Config::SCREEN_WIDTH))
 	{
-
-	}
-
-	if (ImGui::SliderFloat("Box Position (Y)", &m_pGrenade->getTransform()->position.y, 0.0f, Config::SCREEN_HEIGHT))
-	{
-
+		m_pGrenade->Ground.y = m_pPlayer->GetCurrentHeight(m_pGrenade->Ground.x);
+		m_pGrenade->CalculatePosition();
 	}
 	ImGui::End();
 
@@ -276,4 +207,20 @@ void PlayScene::m_buildGrid()
 			m_pGrid.push_back(tile);
 		}
 	}
+}
+
+void PlayScene::BuildStartSurface()
+{
+	StartSurface.x = 0.0f;
+	StartSurface.y = m_pPlayer->Rise.y;
+	StartSurface.w = m_pPlayer->Origin.x;
+	StartSurface.h = Config::SCREEN_HEIGHT - m_pPlayer->Rise.y;
+}
+
+void PlayScene::BuildSlideSurface()
+{
+	SlideSurface.x = m_pPlayer->Run.x;
+	SlideSurface.y = m_pPlayer->Run.y;
+	SlideSurface.w = Config::SCREEN_WIDTH - m_pPlayer->Run.x;
+	SlideSurface.h = Config::SCREEN_HEIGHT - m_pPlayer->Run.y;
 }

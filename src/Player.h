@@ -23,8 +23,6 @@ public:
 	virtual void draw() override;
 	virtual void update(float deltaTime) override;
 	virtual void clean() override;
-
-	void spawn(glm::vec2 position);
 	
 	//Movement
 	float currentAcceleration();
@@ -48,13 +46,16 @@ public:
 	// Ramp variables
 	float rampWidth;
 	float rampHeight;
+	float mu;
 
-	glm::vec2 rampVerticalStart;
-	glm::vec2 rampVerticalEnd;
-	glm::vec2 rampHorizontalStart;
-	glm::vec2 rampHorizontalEnd;
-	glm::vec2 rampDiagonalStart;
-	glm::vec2 rampDiagonalEnd;
+	glm::vec2 Origin;
+	glm::vec2 Rise;
+	glm::vec2 Run;
+
+	void spawn(glm::vec2 position, int width, int height); // accepts width and height in meters
+	void BuildRamp();
+	float GetCurrentHeight(float x); // returns y value given x coordinate
+	float GetCurrentNormal(float x); // returns the surface normal in degrees given x coordinate
 };
 
 #endif /* defined (__PLAYER__) */

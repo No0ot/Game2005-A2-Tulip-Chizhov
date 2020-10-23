@@ -11,6 +11,7 @@ public:
 	static const int SCREEN_WIDTH = 1600;
 	static const int SCREEN_HEIGHT = 900;
 	static const float PX_PER_METER;
+	static const float GRAVITY;
 	static const int TILE_SIZE = 50;
 	static const int ROW_NUM = SCREEN_HEIGHT / TILE_SIZE;
 	static const int COL_NUM = SCREEN_WIDTH / TILE_SIZE;
@@ -34,6 +35,7 @@ public:
 
 };
 
-const float PX_PER_METER = 10;
+const float PX_PER_METER = 100.0f;
+const float GRAVITY = 9.8f;
 
 #endif /* defined (__CONFIG__) */

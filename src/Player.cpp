@@ -19,17 +19,10 @@ Player::Player()
 	SetSprint(false);
 
 	//Ramp Set up
-	rampWidth = 400.0f;
-	rampHeight = 300.0f;
+	rampWidth = 4.0f;
+	rampHeight = 3.0f;
 
-	rampVerticalStart = getTransform()->position;
-	rampVerticalEnd = glm::vec2(getTransform()->position.x, getTransform()->position.y + getHeight());
-
-	rampHorizontalStart = rampVerticalEnd;
-	rampHorizontalEnd = glm::vec2(rampHorizontalStart.x + getWidth(), rampHorizontalStart.y);
-
-	rampDiagonalStart = rampHorizontalEnd;
-	rampDiagonalEnd = rampVerticalStart;
+	mu = -0.42f;
 }
 
 Player::~Player()
@@ -43,15 +36,15 @@ void Player::draw()
 
 	//TextureManager::Instance()->draw("wookie", x, y, getWidth(), getHeight(), 0, 255, true, SDL_FLIP_HORIZONTAL);
 	glm::vec4 colour = {0.0f, 0.0f, 1.0f, 1.0f};
-	Util::DrawLine(rampVerticalStart, rampVerticalEnd, colour);
-	Util::DrawLine(rampHorizontalStart, rampHorizontalEnd, colour);
-	Util::DrawLine(rampDiagonalStart, rampDiagonalEnd, colour);
 
+	for (int i = 0; i < 50; i += 2) {
+		Util::DrawLine({ Rise.x, Rise.y + i }, { Run.x, Run.y + i }, colour);
+	}
 }
 
 void Player::update(float deltaTime)
 {
-	glm::vec2 pos = getTransform()->position;
+	/*glm::vec2 pos = getTransform()->position;
 
 	getRigidBody()->velocity += Util::limitMagnitude(getRigidBody()->acceleration, currentSpeed());
 
@@ -60,19 +53,7 @@ void Player::update(float deltaTime)
 
 	getTransform()->position = pos;
 	slow();
-	SetSprint(false);
-
-	setWidth(rampWidth);
-	setHeight(rampHeight);
-
-	rampVerticalStart = getTransform()->position;
-	rampVerticalEnd = glm::vec2(getTransform()->position.x, getTransform()->position.y + getHeight());
-
-	rampHorizontalStart = rampVerticalEnd;
-	rampHorizontalEnd = glm::vec2(rampHorizontalStart.x + getWidth(), rampHorizontalStart.y);
-
-	rampDiagonalStart = rampHorizontalEnd;
-	rampDiagonalEnd = rampVerticalStart;
+	SetSprint(false);*/
 }
 
 void Player::clean()
@@ -80,11 +61,12 @@ void Player::clean()
 
 }
 
-void Player::spawn(glm::vec2 position)
+void Player::spawn(glm::vec2 position, int width, int height) //accepts height in meters
 {
-	getTransform()->position = position;
-	getRigidBody()->velocity = { 0.0f, 0.0f };
-	getRigidBody()->acceleration = { 0.0f, 0.0f };
+	Origin = position;
+	rampWidth = width;
+	rampHeight = height;
+	BuildRamp();
 }
 
 float Player::currentAcceleration()
@@ -127,6 +109,25 @@ void Player::stop()
 
 float Player::checkDistance(GameObject* pGameObject) {
 	return Util::distance(getTransform()->position, pGameObject->getTransform()->position);
+}
+
+void Player::BuildRamp()
+{
+	Rise = { Origin.x, Origin.y - rampHeight * PX_PER_METER };
+	Run = { Origin.x + rampWidth * PX_PER_METER, Origin.y };
+}
+
+float Player::GetCurrentHeight(float x)
+{
+	if (x < Origin.x) return Rise.y;
+	if (x > Run.x) return Origin.y;
+	return Rise.y + (rampHeight / rampWidth) * (x - Origin.x);
+}
+
+float Player::GetCurrentNormal(float x)
+{
+	if (x < Origin.x || x > Run.x) return 0.0f;
+	return atan(rampHeight / rampWidth);
 }
 
 
