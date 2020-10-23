@@ -22,7 +22,8 @@ Player::Player()
 	rampWidth = 4.0f;
 	rampHeight = 3.0f;
 
-	mu = -0.42f;
+	groundFriction = -0.42f;
+	rampFriction = -1.00f;
 }
 
 Player::~Player()

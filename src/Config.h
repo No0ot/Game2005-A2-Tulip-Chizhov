@@ -36,6 +36,6 @@ public:
 };
 
 const float PX_PER_METER = 100.0f;
-const float GRAVITY = 9.8f;
+const float GRAVITY = -9.8f;
 
 #endif /* defined (__CONFIG__) */

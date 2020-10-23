@@ -41,7 +41,7 @@ void Grenade::update(float deltaTime)
 	case SETUP:
 		break;
 	case INCLINE:
-		getRigidBody()->acceleration.x = GRAVITY * PX_PER_METER * sin(rotation) * deltaTime;
+		getRigidBody()->acceleration.x = slope->rampFriction * GRAVITY * PX_PER_METER * sin(rotation) * deltaTime;
 		getRigidBody()->velocity.x += getRigidBody()->acceleration.x;
 		Ground.x += getRigidBody()->velocity.x * deltaTime;
 		Ground.y = slope->GetCurrentHeight(Ground.x);
@@ -49,7 +49,7 @@ void Grenade::update(float deltaTime)
 		if (Ground.x > slope->Run.x) setGrenadeState(FLAT);
 		break;
 	case FLAT:
-		getRigidBody()->acceleration.x = slope->mu * GRAVITY * PX_PER_METER * deltaTime;
+		getRigidBody()->acceleration.x = -slope->groundFriction * GRAVITY * PX_PER_METER * deltaTime;
 		getRigidBody()->velocity.x += getRigidBody()->acceleration.x;
 		Ground.x += getRigidBody()->velocity.x * deltaTime;
 		Ground.y = slope->GetCurrentHeight(Ground.x);

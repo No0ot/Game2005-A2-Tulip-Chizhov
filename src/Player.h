@@ -46,7 +46,8 @@ public:
 	// Ramp variables
 	float rampWidth;
 	float rampHeight;
-	float mu;
+	float groundFriction;
+	float rampFriction;
 
 	glm::vec2 Origin;
 	glm::vec2 Rise;

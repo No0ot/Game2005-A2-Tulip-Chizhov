@@ -43,7 +43,7 @@ void PlayScene::update(float deltaTime)
 	m_pVelocityLabel->setText("Box velocity on X axis: " + std::to_string(m_pGrenade->getRigidBody()->velocity.x / PX_PER_METER) + " m/s");
 	m_pAngleLabel->setText("Box angle: " + std::to_string(Util::Rad2Deg * m_pGrenade->rotation) + " degrees");
 	if (m_pGrenade->getGrenadeState()!=SETUP)
-		m_pScaleLabel->setText("Current Friction Coefficient: " + (m_pGrenade->getGrenadeState() == INCLINE ? "0" : std::to_string(-m_pPlayer->mu)));
+		m_pScaleLabel->setText("Current Friction Coefficient: " + (m_pGrenade->getGrenadeState() == INCLINE ? "0" : std::to_string(-m_pPlayer->groundFriction)));
 }
 
 void PlayScene::clean()
@@ -103,6 +103,9 @@ void PlayScene::resetSim()
 {
 	m_pPlayer->spawn(glm::vec2(Config::SCREEN_WIDTH / 4, (Config::SCREEN_HEIGHT / 4) * 3), 4, 3);
 	m_pPlayer->BuildRamp();
+	m_pPlayer->groundFriction = -0.42f;
+	m_pPlayer->rampFriction = -1.00f;
+	m_pGrenade->m_mass = 12.8f;
 	reset();
 }
 
@@ -182,6 +185,14 @@ void PlayScene::GUI_Function()
 	{
 		m_pGrenade->Ground.y = m_pPlayer->GetCurrentHeight(m_pGrenade->Ground.x);
 		m_pGrenade->CalculatePosition();
+	}
+	if (ImGui::SliderFloat("Ramp Friction", &m_pPlayer->rampFriction, -1.00f, -0.01f))
+	{
+		
+	}
+	if (ImGui::SliderFloat("Ground Friction", &m_pPlayer->groundFriction, -1.0f, -0.01))
+	{
+
 	}
 	ImGui::End();
 
